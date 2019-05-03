@@ -4,6 +4,7 @@ import 'dart:async';
 
 import '../config/service_url.dart';
 
+///获取主页json数据
 Future getHomePageData() async{
   Response response;
   Dio dio = new Dio();
