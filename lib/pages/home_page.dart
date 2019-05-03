@@ -20,49 +20,48 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin{
 
   @override
   Widget build(BuildContext context) {
+    var formData = {'lon':'115.02932','lat':'35.76189'};
     return Scaffold(
         appBar: AppBar(
           title: Text('百姓生活+'),
         ),
         body: FutureBuilder(
-          future: getHomePageData(),
+          future: request('homePageContext', formData),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               //json总数据的获取
               var data = json.decode(snapshot.data.toString());
-              //轮播图数据解析
-              List<Map> swiperData =
-                  (data['data']['slides'] as List).cast(); //强转类型
-              //中上部导航数据解析
-              List<Map> homeNavigationListData =
-                  (data['data']['category'] as List).cast();
-              //中部广告控件数据解析
-              Map adData = data['data']['advertesPicture'];
-              //店长电话数据解析
-              Map leaderPhoneNumberData = data['data']['shopInfo'];
-              //推荐商品数据解析
-              List<Map> recommendGoodsData =
-                  (data['data']['recommend'] as List).cast();
+              List<Map> swiperData =(data['data']['slides'] as List).cast(); //轮播图数据解析
+              List<Map> homeNavigationListData =(data['data']['category'] as List).cast();  //中上部导航数据解析
+              Map adData = data['data']['advertesPicture']; //中部广告控件数据解析
+              Map leaderPhoneNumberData = data['data']['shopInfo']; //店长电话数据解析
+              List<Map> recommendGoodsData =(data['data']['recommend'] as List).cast(); //推荐商品数据解析
+              //楼层标题数据解析
+              Map floor1TitleData = data['data']['floor1Pic'];
+              Map floor2TitleData = data['data']['floor2Pic'];
+              Map floor3TitleData = data['data']['floor3Pic'];
+              //楼层内容数据解析
+              List<Map> floor1ContentData =(data['data']['floor1'] as List).cast();
+              List<Map> floor2ContentData =(data['data']['floor2'] as List).cast();
+              List<Map> floor3ContentData =(data['data']['floor3'] as List).cast();
+
 
               //界面控件安放
               return SingleChildScrollView(
                 child: Column(
                   children: <Widget>[
-                    HomeTopSwiper(
-                      homeTopSwiperImgDataList: swiperData,
-                    ),
-                    HomeNavigation(
-                      homeNavigationListData: homeNavigationListData,
-                    ),
-                    HomeMiddleAd(
-                      adData: adData,
-                    ),
-                    PlayLeaderPhone(
-                      leaderPhoneData: leaderPhoneNumberData,
-                    ),
-                    RecommendGoods(
-                      recommendGoodsData: recommendGoodsData,
-                    ),
+                    HomeTopSwiper(homeTopSwiperImgDataList: swiperData,),
+                    HomeNavigation(homeNavigationListData: homeNavigationListData,),
+                    HomeMiddleAd( adData: adData,),
+                    PlayLeaderPhone(leaderPhoneData: leaderPhoneNumberData,),
+                    RecommendGoods(recommendGoodsData: recommendGoodsData,),
+                    FloorTitle(floorTitleData: floor1TitleData,),
+                    FloorContent(floorContentData: floor1ContentData,),
+                    FloorTitle(floorTitleData: floor2TitleData,),
+                    FloorContent(floorContentData: floor2ContentData,),
+                    FloorTitle(floorTitleData: floor3TitleData,),
+                    FloorContent(floorContentData: floor3ContentData,),
+                    HotGoodsListView(),
                   ],
                 ),
               );
@@ -264,6 +263,100 @@ class RecommendGoods extends StatelessWidget {
           _crossList(),
         ],
       ),
+    );
+  }
+}
+
+///控件
+///楼层标题控件
+class FloorTitle extends StatelessWidget {
+  final Map floorTitleData;
+  const FloorTitle({Key key, this.floorTitleData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(3.0),
+      child: Image.network(floorTitleData['PICTURE_ADDRESS']),
+    );
+  }
+}
+
+///控件
+///楼层内容控件
+class FloorContent extends StatelessWidget {
+  final List floorContentData;
+  const FloorContent({Key key, this.floorContentData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          _topRow(),
+          _bottomRow(),
+        ],
+      ),
+    );
+  }
+
+  //每项内容
+  Widget _goodsItem(Map goodsData){
+    return InkWell(
+      onTap: (){print("点击了楼层商品");},
+      child: Container(
+        width: ScreenUtil().setWidth(375),
+        child: Image.network(goodsData['image']),
+      ),
+    );
+  }
+
+  //上部行布局1+2
+  Widget _topRow(){
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorContentData[0]),
+        Column(
+          children: <Widget>[
+            _goodsItem(floorContentData[1]),
+            _goodsItem(floorContentData[2]),
+          ],
+        )
+      ],
+    );
+  }
+
+  //下部行布局1+1
+  Widget _bottomRow(){
+    return Row(
+      children: <Widget>[
+        _goodsItem(floorContentData[3]),
+        _goodsItem(floorContentData[4]),
+      ],
+    );
+  }
+}
+
+///控件
+///火爆专区商品列表
+class HotGoodsListView extends StatefulWidget {
+  _HotGoodsListViewState createState() => _HotGoodsListViewState();
+}
+
+class _HotGoodsListViewState extends State<HotGoodsListView> {
+
+  @override
+  void initState() {
+    request('homePageBelowContent', 1).then((val){
+      print(val);
+    });
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+       child: Text("火爆专区..."),
     );
   }
 }
