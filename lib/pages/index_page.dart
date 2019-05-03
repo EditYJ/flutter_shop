@@ -48,7 +48,7 @@ class _IndexPageState extends State<IndexPage> {
     //初始化屏幕适配插件
     ScreenUtil.instance = ScreenUtil(width: 750, height: 1334)..init(context);
     return Scaffold(
-      backgroundColor: Color.fromRGBO(244, 245, 245, 1.0),
+      backgroundColor: Color.fromRGBO(245, 245, 245, 1.0),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: bottomItemList,
