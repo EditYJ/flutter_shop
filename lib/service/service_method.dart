@@ -9,13 +9,16 @@ import '../config/service_url.dart';
 ///`urlKey`: service_url中的API地址的键 
 ///
 ///`requestData`: 请求数据
-Future request(urlKey, requestData) async{
+Future request(urlKey, {requestData}) async{
   Response response;
   Dio dio = new Dio();
   dio.options.contentType = ContentType.parse('application/x-www-form-urlencoded');
   try {
     print('开始获取=urlKey=为【${urlKey}】的数据............');
-    response = await dio.post(servicePath[urlKey], data: requestData);
+    if(requestData!=null)
+      response = await dio.post(servicePath[urlKey], data: requestData);
+    else
+      response = await dio.post(servicePath[urlKey]);
     return response.data;
   } catch (e) {
     return print(e);
